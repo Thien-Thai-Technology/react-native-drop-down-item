@@ -12,7 +12,11 @@ import {
   Animated,
 } from 'react-native';
 
+import {IconUp, IconNextSmall} from '../../src/styles/svg';
+
 import PropTypes from 'prop-types';
+
+const {width} = Dimensions.get('screen');
 
 const styles = StyleSheet.create({
   container: {
@@ -94,16 +98,16 @@ class Item extends Component {
   }
 
   render() {
-    const { backgroundColor, style, header, visibleImage, invisibleImage, children } = this.props;
-    const { contentVisible } = this.state;
     return (
       <Animated.View style={[
         styles.container,
         {
           height: this.animated,
-          backgroundColor: backgroundColor,
+          backgroundColor: this.props.backgroundColor,
+          marginBottom: width*0.04,
+          // paddingTop: 30
         },
-        style,
+        this.props.style,
       ]}>
         <TouchableOpacity
           activeOpacity={0.5}
@@ -111,13 +115,12 @@ class Item extends Component {
         >
           <View
             onLayout={ this.onAnimLayout }
+            style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginRight: width*0.045}}
           >
-            { header }
-            <Image source={
-              contentVisible
-                ? visibleImage
-                : invisibleImage
-            } style={styles.icons}/>
+            { this.props.header }
+            {!this.state.contentVisible
+              ? <IconNextSmall />
+              : <IconUp />}
           </View>
         </TouchableOpacity>
         <View
@@ -126,10 +129,10 @@ class Item extends Component {
         >
           <View
             style={[
-              styles.contentChild,
+              styles.contentChild, {marginTop: width*0.04}
             ]}
           >
-            { children }
+            { this.props.children }
           </View>
         </View>
       </Animated.View>
@@ -137,14 +140,13 @@ class Item extends Component {
   }
 
   runAnimation = () => {
-    const { contentVisible, headerHeight, contentHeight } = this.state;
-    const initialValue = contentVisible
-      ? headerHeight + contentHeight : headerHeight;
-    const finalValue = contentVisible
-      ? headerHeight : contentHeight + headerHeight;
+    const initialValue = this.state.contentVisible
+      ? this.state.headerHeight + this.state.contentHeight : this.state.headerHeight;
+    const finalValue = this.state.contentVisible
+      ? this.state.headerHeight : this.state.contentHeight + this.state.headerHeight;
 
     this.setState({
-      contentVisible: !contentVisible,
+      contentVisible: !this.state.contentVisible,
     });
 
     this.animated.setValue(initialValue);
@@ -157,19 +159,17 @@ class Item extends Component {
   }
 
   onAnimLayout = (evt) => {
-    const { isMounted, contentHeight } = this.state;
-    const { contentVisible } = this.props;
     const headerHeight = evt.nativeEvent.layout.height;
-    if (!isMounted && !contentVisible) {
+    if (!this.state.isMounted && !this.props.contentVisible) {
       this.animated = new Animated.Value(headerHeight);
       this.setState({
         isMounted: true,
         headerHeight,
       });
       return;
-    } else if (!isMounted) {
+    } else if (!this.state.isMounted) {
       InteractionManager.runAfterInteractions(() => {
-        this.animated = new Animated.Value(headerHeight + contentHeight);
+        this.animated = new Animated.Value(headerHeight + this.state.contentHeight);
       });
     }
     this.setState({ headerHeight, isMounted: true });
