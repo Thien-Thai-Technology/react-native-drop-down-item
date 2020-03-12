@@ -99,7 +99,7 @@ class Item extends Component {
 
   render() {
     return (
-      <Animated.View style={[
+      <Animated.ScrollView style={[
         styles.container,
         {
           height: this.animated,
@@ -108,7 +108,8 @@ class Item extends Component {
           // paddingTop: 30
         },
         this.props.style,
-      ]}>
+      ]} scrollEnabled={this.state.contentVisible}
+      >
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={this.onPress}
@@ -135,7 +136,7 @@ class Item extends Component {
             { this.props.children }
           </View>
         </View>
-      </Animated.View>
+      </Animated.ScrollView>
     );
   }
 
