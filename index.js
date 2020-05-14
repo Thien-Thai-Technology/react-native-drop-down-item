@@ -116,7 +116,7 @@ class Item extends Component {
         >
           <View
             onLayout={ this.onAnimLayout }
-            style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginRight: width*0.045}}
+            style={[this.props.styleHeader,{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginRight: width*0.045}]}
           >
             { this.props.header }
             {!this.state.contentVisible
